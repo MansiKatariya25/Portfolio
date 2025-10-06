@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { ensureGSAP } from '../utils/anim'
 
 const steps = [
   {
@@ -80,8 +81,17 @@ function ProcessCard({ step, index }) {
 }
 
 export default function Process() {
+  const root = useRef(null)
+  useEffect(() => {
+    const { gsap } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      gsap.from('.process-card', { y: 20, opacity: 0, duration: 0.5, stagger: 0.1, ease: 'power2.out', scrollTrigger: { trigger: root.current, start: 'top 70%' } })
+    }, root)
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-16 px-6">
+    <div ref={root} className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-16 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full border-2 border-gray-900 bg-white text-sm font-semibold mb-6">
@@ -94,7 +104,7 @@ export default function Process() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((step, index) => (
-            <ProcessCard key={step.title} step={step} index={index} />
+            <div key={step.title} className="process-card"><ProcessCard step={step} index={index} /></div>
           ))}
         </div>
       </div>

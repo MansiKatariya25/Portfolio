@@ -30,9 +30,28 @@ function SkillPill({ label }) {
   )
 }
 
+import { useEffect, useRef } from 'react'
+import { ensureGSAP } from '../utils/anim'
+
 export default function Skills() {
+  const root = useRef(null)
+  useEffect(() => {
+    const { gsap, ScrollTrigger } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      gsap.from('.skill-card', {
+        scrollTrigger: { trigger: root.current, start: 'top 70%' },
+        y: 20,
+        opacity: 0,
+        duration: 0.5,
+        stagger: 0.1,
+        ease: 'power2.out'
+      })
+    }, root)
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-16 px-6">
+    <div ref={root} className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 py-16 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <span className="inline-flex items-center gap-2 px-5 py-2 rounded-full border-2 border-gray-900 bg-white text-sm font-semibold mb-6">
@@ -46,7 +65,7 @@ export default function Skills() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {skills.map(({ group, items, bg }, idx) => (
-            <div key={group} className="relative h-full group">
+            <div key={group} className="relative h-full group skill-card">
               <div 
                 className="relative h-full rounded-3xl border-2 border-gray-900 backdrop-blur shadow-[2px_2px_0_0_rgba(0,0,0,1)]"
                 style={{ backgroundColor: bg }}

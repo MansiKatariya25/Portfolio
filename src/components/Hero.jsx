@@ -1,4 +1,5 @@
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
+import { ensureGSAP } from '../utils/anim'
 
 const AccentUnderline = ({ children }) => (
   <span className="relative">
@@ -9,25 +10,44 @@ const AccentUnderline = ({ children }) => (
 
 export default function Hero() {
   const [imageLoaded, setImageLoaded] = useState(false)
+  const root = useRef(null)
+
+  useEffect(() => {
+    const { gsap, ScrollTrigger } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({
+        scrollTrigger: {
+          trigger: root.current,
+          start: 'top 80%'
+        }
+      })
+      tl.from('.hero-chip', { y: 10, opacity: 0, duration: 0.4 })
+        .from('.hero-title', { y: 20, opacity: 0, duration: 0.6 }, '-=0.1')
+        .from('.hero-desc', { y: 10, opacity: 0, duration: 0.5 }, '-=0.2')
+        .from('.hero-cta', { y: 8, opacity: 0, duration: 0.4 }, '-=0.25')
+        .from('.hero-visual', { scale: 0.9, opacity: 0, duration: 0.6, ease: 'power2.out' }, '-=0.2')
+    }, root)
+    return () => ctx.revert()
+  }, [])
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-16">
+    <div ref={root} className="max-w-7xl mx-auto px-6 py-16">
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="space-y-6">
-          <span className="inline-block px-4 py-2 rounded-full border-2 border-gray-900 bg-white text-sm font-semibold">
+          <span className="hero-chip inline-block px-4 py-2 rounded-full border-2 border-gray-900 bg-white text-sm font-semibold">
             ✶ HELLO!
           </span>
-          <h1 className="roboto-slab text-4xl sm:text-[40px] md:text-[58px] font-extrabold leading-tight text-gray-900">
+          <h1 className="hero-title roboto-slab text-4xl sm:text-[40px] md:text-[58px] font-extrabold leading-tight text-gray-900">
             I'm Mansi Katariya,
             <br />
             <span className="relative inline-block">
               a full-stack developer
             </span>
           </h1>
-          <p className="quicksand text-[20px] text-gray-700 max-w-prose leading-relaxed">
+          <p className="hero-desc quicksand text-[20px] text-gray-700 max-w-prose leading-relaxed">
             I'm a freelancer and full-stack developer who loves building clean, fast, and user-friendly web apps. I'm passionate about solving real problems and delivering reliable software.
           </p>
-          <div>
+          <div className="hero-cta">
             <a
               href="#work"
               className="roboto-slab inline-flex items-center rounded-xl border-2 border-gray-900 bg-white px-8 py-4 font-semibold shadow-[4px_4px_0_0_#000] hover:translate-y-1 hover:shadow-[2px_2px_0_0_#000] transition-all"
@@ -37,7 +57,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center">
+        <div className="hero-visual relative flex items-center justify-center">
           {/* Main circular container */}
           <div className="relative w-[50%] aspect-square">
             {/* Large circular background */}

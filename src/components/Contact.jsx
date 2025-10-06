@@ -1,8 +1,20 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { ensureGSAP } from '../utils/anim'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', message: '' })
   const [status, setStatus] = useState({ sending: false, ok: null, error: null, fields: [] })
+  const root = useRef(null)
+
+  useEffect(() => {
+    const { gsap } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      gsap.from('.contact-head', { y: 12, opacity: 0, duration: 0.5, ease: 'power2.out', scrollTrigger: { trigger: root.current, start: 'top 75%' } })
+      gsap.from('.contact-field', { y: 10, opacity: 0, duration: 0.4, ease: 'power2.out', stagger: 0.08, scrollTrigger: { trigger: root.current, start: 'top 70%' } })
+      gsap.from('.contact-cta', { y: 8, opacity: 0, duration: 0.4, ease: 'power2.out', scrollTrigger: { trigger: root.current, start: 'top 65%' } })
+    }, root)
+    return () => ctx.revert()
+  }, [])
 
   const onChange = (e) => {
     const { name, value } = e.target
@@ -44,7 +56,7 @@ export default function Contact() {
   }
 
   return (
-    <div className="relative">
+    <div ref={root} className="relative">
       {/* background split with thin lines */}
       <div className="absolute inset-x-0 top-0 h-24 md:h-36 pointer-events-none border-gray-900/70"></div>
       <div className="absolute inset-x-0 top-24 md:top-64 bottom-0 bg-violet-100 border-t border-gray-900/70"></div>
@@ -52,7 +64,7 @@ export default function Contact() {
       <div className="relative max-w-2xl mx-auto px-6">
         <div className="mt-[-2rem] md:mt-[-3rem]"></div>
         <div className="bg-white rounded-[22px] border-2 border-gray-900/70 shadow-[6px_6px_0_0_rgba(0,0,0,0.2)] p-6 sm:p-6 md:p-10">
-          <div className="text-center mb-6">
+          <div className="text-center mb-6 contact-head">
             <span className="inline-block px-4 py-1 rounded-full border border-gray-700/30 bg-white text-sm font-medium mb-4">
               ✦ CONTACT
             </span>
@@ -65,7 +77,7 @@ export default function Contact() {
 
           <form className="grid gap-8" onSubmit={onSubmit}>
             <div className="grid md:grid-cols-2 gap-8">
-              <div>
+              <div className="contact-field">
                 <label className="block text-sm text-gray-600 mb-2">Name</label>
                 <input
                   placeholder="Your name *"
@@ -80,7 +92,7 @@ export default function Contact() {
                   <p className="mt-1 text-xs text-red-700">Name must be at least 2 characters.</p>
                 )}
               </div>
-              <div>
+              <div className="contact-field">
                 <label className="block text-sm text-gray-600 mb-2">Email</label>
                 <input
                   type="email"
@@ -97,7 +109,7 @@ export default function Contact() {
               </div>
             </div>
 
-            <div>
+            <div className="contact-field">
               <label className="block text-sm text-gray-600 mb-2">Message</label>
               <textarea
                 placeholder="Tell me about your project *"
@@ -113,7 +125,7 @@ export default function Contact() {
               )}
             </div>
 
-            <div className="text-center pt-2">
+            <div className="text-center pt-2 contact-cta">
               <button
                 type="submit"
                 disabled={status.sending}

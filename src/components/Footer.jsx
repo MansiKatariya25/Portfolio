@@ -18,10 +18,22 @@ const IconInstagram = (props) => (
   </svg>
 )
 
+import { useEffect, useRef } from 'react'
+import { ensureGSAP } from '../utils/anim'
+
 export default function Footer() {
+  const root = useRef(null)
+  useEffect(() => {
+    const { gsap } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      gsap.from('.footer-shell', { opacity: 0, y: 12, duration: 0.5, ease: 'power2.out', scrollTrigger: { trigger: root.current, start: 'top 85%' } })
+    }, root)
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <footer className="bg-violet-100 border-t border-violet-200">
-      <div className="max-w-5xl mx-auto px-6 py-12">
+    <footer ref={root} className="bg-violet-100 border-t border-violet-200">
+      <div className="footer-shell max-w-5xl mx-auto px-6 py-12">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-8">
           {/* Left: brand + copyright */}
           <div>
@@ -65,4 +77,3 @@ export default function Footer() {
     </footer>
   )
 }
-

@@ -1,3 +1,6 @@
+import { useEffect, useRef } from 'react'
+import { ensureGSAP } from '../utils/anim'
+
 export default function Navbar() {
   const RESUME_URL = 'https://drive.google.com/file/d/1QmfOS43MGnfdNiGy9LbWduMSXz1ErJ3F/view?usp=sharing'
   const navItems = [
@@ -8,9 +11,19 @@ export default function Navbar() {
     { id: 'resume', label: 'Resume' },
   ]
 
+  const root = useRef(null)
+
+  useEffect(() => {
+    const { gsap } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      gsap.from('.nav-shell', { y: -20, opacity: 0, duration: 0.6, ease: 'power2.out' })
+    }, root)
+    return () => ctx.revert()
+  }, [])
+
   return (
-    <header className="fixed top-0 inset-x-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 border-b border-violet-200">
-      <nav className="max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
+    <header ref={root} className="fixed top-0 inset-x-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white/60 border-b border-violet-200">
+      <nav className="nav-shell max-w-6xl mx-auto flex items-center justify-between px-6 py-4">
         <a href="#home" className="logo font-semibold text-2xl text-gray-900">
           Mansi
         </a>

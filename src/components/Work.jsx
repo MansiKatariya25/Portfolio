@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { ensureGSAP } from '../utils/anim'
 
 const TECH = {
   react: { slug: 'react', label: 'React', color: '61DAFB' },
@@ -58,6 +59,16 @@ const publicUrl = (path) => {
 export default function Work() {
   const [hover, setHover] = useState({ active: false, link: null })
   const [cursor, setCursor] = useState({ x: 0, y: 0 })
+  const root = useRef(null)
+
+  useEffect(() => {
+    const { gsap } = ensureGSAP()
+    const ctx = gsap.context(() => {
+      gsap.from('.work-head', { y: 10, opacity: 0, duration: 0.5, ease: 'power2.out', scrollTrigger: { trigger: root.current, start: 'top 75%' } })
+      gsap.from('.work-item', { y: 24, opacity: 0, duration: 0.6, ease: 'power2.out', stagger: 0.12, scrollTrigger: { trigger: root.current, start: 'top 70%' } })
+    }, root)
+    return () => ctx.revert()
+  }, [])
 
   const openLive = (url) => {
     if (!url) return
@@ -65,8 +76,8 @@ export default function Work() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-6">
-      <div className="text-center mb-16">
+    <div ref={root} className="max-w-6xl mx-auto px-6">
+      <div className="text-center mb-16 work-head">
         <span className="inline-block px-4 py-1 rounded-full border border-gray-800 bg-white text-sm font-medium mb-6">
           ✦ MY WORKS
         </span>
@@ -78,7 +89,7 @@ export default function Work() {
 
       <div className="grid md:grid-cols-2 gap-8 items-start">
         {projects.map((p) => (
-          <article key={p.title} className="flex flex-col">
+          <article key={p.title} className="flex flex-col work-item">
             <div className="rounded-3xl border-2 border-gray-900 overflow-hidden bg-white shadow-lg hover:shadow-xl transition-shadow">
               <div
                 className={`aspect-[3/2] bg-gradient-to-br from-violet-200 to-violet-300 relative ${
