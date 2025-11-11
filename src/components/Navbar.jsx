@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { ensureGSAP } from '../utils/anim'
 
 export default function Navbar() {
-  const RESUME_URL = 'https://drive.google.com/file/d/1QmfOS43MGnfdNiGy9LbWduMSXz1ErJ3F/view?usp=sharing'
+  const RESUME_URL = 'https://drive.google.com/file/d/1ixtZvfMKgunoLXubluwBST0V3t5zB56I/view?usp=sharing'
   const navItems = [
     { id: 'home', label: 'Home' },
     { id: 'skills', label: 'Skills' },
